@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户登录 - China Food Tour</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background: #fdf6e3; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .auth-container { background: #ffffff; border: 2px solid #b71c1c; border-radius: 12px; width: 100%; max-width: 400px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #b71c1c; margin-bottom: 20px; font-size: 22px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 14px; font-weight: bold; color: #333; margin-bottom: 6px; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; }
+        .form-group input:focus { border-color: #b71c1c; }
+        .submit-btn { width: 100%; padding: 12px; background: #b71c1c; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .submit-btn:hover { background: #880e4f; }
+        .link-box { text-align: center; margin-top: 20px; font-size: 14px; color: #666; }
+        .link-box a { color: #b71c1c; text-decoration: none; font-weight: bold; }
+        .message-box { padding: 10px; margin-top: 15px; border-radius: 6px; text-align: center; font-size: 14px; display: none; }
+        .message-box.success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+        .message-box.error { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <h2>用户登录 (Đăng Nhập)</h2>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label>用户名 / 邮箱 (Tài khoản / Email)</label>
+                <input type="text" id="loginUser" required placeholder="请输入用户名或邮箱">
+            </div>
+            <div class="form-group">
+                <label>密码 (Mật khẩu)</label>
+                <input type="password" id="loginPass" required placeholder="请输入密码">
+            </div>
+            <button type="submit" class="submit-btn">立即登录 (Đăng Nhập)</button>
+        </form>
+
+        <div id="msgBox" class="message-box"></div>
+
+        <div class="link-box">
+            还没有账号？ (Chưa có tài khoản?) <a href="register.html">立即注册 (Đăng ký ngay)</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const msgBox = document.getElementById('msgBox');
+            msgBox.style.display = 'none';
+
+            const data = {
+                username: document.getElementById('loginUser').value,
+                password: document.getElementById('loginPass').value
+            };
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                
+                if (result.success) {
+                    msgBox.className = 'message-box success';
+                    msgBox.innerText = '登录成功！正在跳转... (Đăng nhập thành công!)';
+                    msgBox.style.display = 'block';
+                    localStorage.setItem('user', JSON.stringify(result.user));
+                    
+                    // Chuyển hướng sang trang chính sau 1 giây
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                } else {
+                    msgBox.className = 'message-box error';
+                    msgBox.innerText = result.message;
+                    msgBox.style.display = 'block';
+                }
+            } catch (err) {
+                msgBox.className = 'message-box error';
+                msgBox.innerText = '网络错误，请稍后再试 (Lỗi kết nối máy chủ)';
+                msgBox.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

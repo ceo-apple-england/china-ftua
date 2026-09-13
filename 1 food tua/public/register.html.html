@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户注册 - China Food Tour</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background: #fdf6e3; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .auth-container { background: #ffffff; border: 2px solid #b71c1c; border-radius: 12px; width: 100%; max-width: 400px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #b71c1c; margin-bottom: 20px; font-size: 22px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 14px; font-weight: bold; color: #333; margin-bottom: 6px; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; }
+        .form-group input:focus { border-color: #b71c1c; }
+        .submit-btn { width: 100%; padding: 12px; background: #b71c1c; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .submit-btn:hover { background: #880e4f; }
+        .link-box { text-align: center; margin-top: 20px; font-size: 14px; color: #666; }
+        .link-box a { color: #b71c1c; text-decoration: none; font-weight: bold; }
+        .message-box { padding: 10px; margin-top: 15px; border-radius: 6px; text-align: center; font-size: 14px; display: none; }
+        .message-box.success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+        .message-box.error { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <h2>注册新账号 (Đăng Ký)</h2>
+
+        <form id="registerForm">
+            <div class="form-group">
+                <label>用户名 (Tên tài khoản)</label>
+                <input type="text" id="regUser" required placeholder="设置您的用户名">
+            </div>
+            <div class="form-group">
+                <label>电子邮箱 (Email)</label>
+                <input type="email" id="regEmail" required placeholder="请输入您的邮箱">
+            </div>
+            <div class="form-group">
+                <label>设置密码 (Mật khẩu)</label>
+                <input type="password" id="regPass" required placeholder="设置登录密码">
+            </div>
+            <button type="submit" class="submit-btn">确认注册 (Đăng Ký)</button>
+        </form>
+
+        <div id="msgBox" class="message-box"></div>
+
+        <div class="link-box">
+            已有账号？ (Đã có tài khoản?) <a href="index.html">返回登录 (Đăng nhập)</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const msgBox = document.getElementById('msgBox');
+            msgBox.style.display = 'none';
+
+            const data = {
+                username: document.getElementById('regUser').value,
+                email: document.getElementById('regEmail').value,
+                password: document.getElementById('regPass').value
+            };
+
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+
+                if (result.success) {
+                    msgBox.className = 'message-box success';
+                    msgBox.innerText = '注册成功！正在跳转到登录页面... (Đăng ký thành công!)';
+                    msgBox.style.display = 'block';
+                    
+                    // Chuyển sang trang đăng nhập sau 1.5 giây
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                } else {
+                    msgBox.className = 'message-box error';
+                    msgBox.innerText = result.message;
+                    msgBox.style.display = 'block';
+                }
+            } catch (err) {
+                msgBox.className = 'message-box error';
+                msgBox.innerText = '网络错误，请稍后再试 (Lỗi kết nối máy chủ)';
+                msgBox.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

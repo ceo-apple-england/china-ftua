@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎 - Food Tour China</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #fdf6e3; padding: 40px; text-align: center; }
+        .card { background: white; max-width: 500px; margin: 0 auto; padding: 30px; border-radius: 10px; border: 2px solid #b71c1c; }
+        h1 { color: #b71c1c; margin-bottom: 20px; }
+        button { padding: 10px 20px; background: #333; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>欢迎来到美食之旅！</h1>
+        <p id="welcomeUser" style="font-size: 18px; margin-bottom: 20px;"></p>
+        <button onclick="logout()">退出登录 (Đăng xuất)</button>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+            window.location.href = 'index.html'; // Nếu chưa đăng nhập thì đẩy về trang Login
+        } else {
+            document.getElementById('welcomeUser').innerText = `你好, ${user.username} (${user.email})`;
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
